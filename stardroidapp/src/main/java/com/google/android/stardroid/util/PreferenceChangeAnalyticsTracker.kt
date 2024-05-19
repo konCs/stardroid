@@ -43,8 +43,10 @@ class PreferenceChangeAnalyticsTracker @Inject internal constructor(private val 
     analytics.trackEvent(AnalyticsInterface.PREFERENCE_CHANGE_EVENT, prefBundle)
   }
 
-  override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-    trackPreferenceChange(sharedPreferences, key)
+  override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+    if (sharedPreferences != null && key != null) {
+      trackPreferenceChange(sharedPreferences, key)
+    }
   }
 
   private fun getPreferenceAsString(sharedPreferences: SharedPreferences, key: String): String? {
