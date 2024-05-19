@@ -129,7 +129,7 @@ class SearchTermsProvider : ContentProvider() {
 
   companion object {
     private val TAG = getTag(SearchTermsProvider::class.java)
-    var AUTHORITY = "appakia.com.google.android.stardroid.searchterms"
+    var AUTHORITY = "stardroidKs.com.google.android.stardroid.searchterms"
     val CONTENT_URI = Uri.parse("content://" + AUTHORITY)
     private const val SEARCH_SUGGEST = 0
     private val uriMatcher = buildUriMatcher()

@@ -89,7 +89,7 @@
         <!-- Provides search suggestions. -->
         <provider
             android:name=".search.SearchTermsProvider"
-            android:authorities="appakia.com.google.android.stardroid.searchterms"
+            android:authorities="stardroidKs.com.google.android.stardroid.searchterms"
             android:exported="false"
             android:syncable="false"/>
 
