@@ -155,7 +155,7 @@ public class FullscreenControlsManager {
       // Delayed display of UI elements
       ActionBar actionBar = mActivity.getActionBar();
       if (actionBar != null) {
-        actionBar.show();
+//        actionBar.show();
       }
       for (View view : mViewsToHide) {
         view.setVisibility(View.VISIBLE);

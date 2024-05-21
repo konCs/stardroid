@@ -38,6 +38,7 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,7 +92,7 @@ import javax.inject.Provider;
  * The main map-rendering Activity.
  */
 public class DynamicStarMapActivity extends InjectableActivity
-    implements OnSharedPreferenceChangeListener, HasComponent<DynamicStarMapComponent> {
+        implements OnSharedPreferenceChangeListener, HasComponent<DynamicStarMapComponent> {
   private static final int TIME_DISPLAY_DELAY_MILLIS = 1000;
   private FullscreenControlsManager fullscreenControlsManager;
 
@@ -111,7 +112,7 @@ public class DynamicStarMapActivity extends InjectableActivity
     private boolean viewDirectionMode;
 
     public RendererModelUpdateClosure(AstronomerModel model,
-        RendererController rendererController, SharedPreferences sharedPreferences) {
+                                      RendererController rendererController, SharedPreferences sharedPreferences) {
       this.model = model;
       this.rendererController = rendererController;
       // TODO(jontayler): figure out why we need to do this here.
@@ -142,7 +143,7 @@ public class DynamicStarMapActivity extends InjectableActivity
 
   private static void updateViewDirectionMode(AstronomerModel model, SharedPreferences sharedPreferences) {
     String viewDirectionMode =
-        sharedPreferences.getString(ApplicationConstants.VIEW_MODE_PREFKEY, "STANDARD");
+            sharedPreferences.getString(ApplicationConstants.VIEW_MODE_PREFKEY, "STANDARD");
     switch(viewDirectionMode) {
       case "ROTATE90":
         model.setViewDirectionMode(AstronomerModel.ViewDirectionMode.ROTATE90);
@@ -215,15 +216,15 @@ public class DynamicStarMapActivity extends InjectableActivity
     super.onCreate(icicle);
 
     daggerComponent = DaggerDynamicStarMapComponent.builder()
-        .applicationComponent(getApplicationComponent())
-        .dynamicStarMapModule(new DynamicStarMapModule(this)).build();
+            .applicationComponent(getApplicationComponent())
+            .dynamicStarMapModule(new DynamicStarMapModule(this)).build();
     daggerComponent.inject(this);
 
     sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
     // Set up full screen mode, hide the system UI etc.
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
-                         WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
     // TODO(jontayler): upgrade to
     // getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
@@ -243,13 +244,13 @@ public class DynamicStarMapActivity extends InjectableActivity
     setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
     ActivityLightLevelChanger activityLightLevelChanger = new ActivityLightLevelChanger(this,
-        new NightModeable() {
-          @Override
-          public void setNightMode(boolean nightMode1) {
-            DynamicStarMapActivity.this.rendererController.queueNightVisionMode(nightMode1);
-          }});
+            new NightModeable() {
+              @Override
+              public void setNightMode(boolean nightMode1) {
+                DynamicStarMapActivity.this.rendererController.queueNightVisionMode(nightMode1);
+              }});
     activityLightLevelManager = new ActivityLightLevelManager(activityLightLevelChanger,
-                                                              sharedPreferences);
+            sharedPreferences);
 
     PowerManager pm = ContextCompat.getSystemService(this, PowerManager.class);
     if (pm != null) {
@@ -270,7 +271,7 @@ public class DynamicStarMapActivity extends InjectableActivity
   private void checkForSensorsAndMaybeWarn() {
     SensorManager sensorManager = ContextCompat.getSystemService(this, SensorManager.class);
     if (sensorManager != null && sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null
-        && sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
+            && sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
       Log.i(TAG, "Minimum sensors present");
       // We want to reset to auto mode on every restart, as users seem to get
       // stuck in manual mode and can't find their way out.
@@ -286,17 +287,17 @@ public class DynamicStarMapActivity extends InjectableActivity
       @Override
       public void run() {
         if (!sharedPreferences
-            .getBoolean(ApplicationConstants.NO_WARN_ABOUT_MISSING_SENSORS, false)) {
+                .getBoolean(ApplicationConstants.NO_WARN_ABOUT_MISSING_SENSORS, false)) {
           Log.d(TAG, "showing no sensor dialog");
           noSensorsDialogFragment.show(fragmentManager, "No sensors dialog");
           // First time, force manual mode.
           sharedPreferences.edit().putBoolean(ApplicationConstants.AUTO_MODE_PREF_KEY, false)
-              .apply();
+                  .apply();
           setAutoMode(false);
         } else {
           Log.d(TAG, "showing no sensor toast");
           Toast.makeText(
-              DynamicStarMapActivity.this, R.string.no_sensor_warning, Toast.LENGTH_LONG).show();
+                  DynamicStarMapActivity.this, R.string.no_sensor_warning, Toast.LENGTH_LONG).show();
           // Don't force manual mode second time through - leave it up to the user.
         }
       }
@@ -447,7 +448,7 @@ public class DynamicStarMapActivity extends InjectableActivity
     // the foreground and pushed back.  Note that this will mean that sessions
     // do get interrupted by (e.g.) loading preference or help screens.
     int sessionLengthSeconds = (int) ((
-        System.currentTimeMillis() - sessionStartTime) / 1000);
+            System.currentTimeMillis() - sessionStartTime) / 1000);
     SessionBucketLength bucket = getSessionLengthBucket(sessionLengthSeconds);
     Bundle b = new Bundle();
     // Let's see how well Analytics buckets things and log the raw number
@@ -481,9 +482,9 @@ public class DynamicStarMapActivity extends InjectableActivity
   public void setTimeTravelMode(Date newTime) {
     SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd G  HH:mm:ss z");
     Toast.makeText(this,
-                   String.format(getString(R.string.time_travel_start_message_alt),
-                                 dateFormatter.format(newTime)),
-                   Toast.LENGTH_LONG).show();
+            String.format(getString(R.string.time_travel_start_message_alt),
+                    dateFormatter.format(newTime)),
+            Toast.LENGTH_LONG).show();
     if (sharedPreferences.getBoolean(ApplicationConstants.SOUND_EFFECTS, true)) {
       try {
         timeTravelNoise.start();
@@ -512,8 +513,8 @@ public class DynamicStarMapActivity extends InjectableActivity
     flashTheScreen();
     controller.useRealTime();
     Toast.makeText(this,
-        R.string.time_travel_close_message,
-                   Toast.LENGTH_SHORT).show();
+            R.string.time_travel_close_message,
+            Toast.LENGTH_SHORT).show();
     Log.d(TAG, "Leaving Time Travel mode.");
     timePlayerUI.setVisibility(View.GONE);
   }
@@ -647,7 +648,7 @@ public class DynamicStarMapActivity extends InjectableActivity
     rendererController = new RendererController(renderer, skyView);
     // The renderer will now call back every frame to get model updates.
     rendererController.addUpdateClosure(
-        new RendererModelUpdateClosure(model, rendererController, sharedPreferences));
+            new RendererModelUpdateClosure(model, rendererController, sharedPreferences));
 
     Log.i(TAG, "Setting layers @ " + System.currentTimeMillis());
     layerManager.registerWithRenderer(rendererController);
@@ -688,18 +689,28 @@ public class DynamicStarMapActivity extends InjectableActivity
     }
     buttonViews.add(findViewById(R.id.manual_auto_toggle));
     ButtonLayerView manualButtonLayer = (ButtonLayerView) findViewById(
-        R.id.layer_manual_auto_toggle);
+            R.id.layer_manual_auto_toggle);
+
+    RelativeLayout exitButton = findViewById(R.id.exit_button);
+    exitButton.setOnClickListener(view -> {
+      finish();
+    });
+
+    manualButtonLayer.hide();
+    providerButtons.hide();
+    getActionBar().hide();
 
     fullscreenControlsManager = new FullscreenControlsManager(
-        this,
-        findViewById(R.id.main_sky_view),
-        Lists.<View>asList(manualButtonLayer, providerButtons),
-        buttonViews);
+            this,
+            findViewById(R.id.main_sky_view),
+//        Lists.<View>asList(manualButtonLayer, providerButtons),
+            Lists.asList(exitButton),
+            buttonViews);
 
     MapMover mapMover = new MapMover(model, controller, this);
 
     gestureDetector = new GestureDetector(this, new GestureInterpreter(
-        fullscreenControlsManager, mapMover));
+            fullscreenControlsManager, mapMover));
     dragZoomRotateDetector = new DragRotateZoomGestureDetector(mapMover);
   }
 
@@ -765,7 +776,7 @@ public class DynamicStarMapActivity extends InjectableActivity
 
     TextView searchPromptText = (TextView) findViewById(R.id.search_status_label);
     searchPromptText.setText(
-        String.format("%s %s", getString(R.string.search_target_looking_message), searchTerm));
+            String.format("%s %s", getString(R.string.search_target_looking_message), searchTerm));
     View searchControlBar = findViewById(R.id.search_control_bar);
     searchControlBar.setVisibility(View.VISIBLE);
   }
@@ -778,10 +789,10 @@ public class DynamicStarMapActivity extends InjectableActivity
     timePlayerUI = findViewById(R.id.time_player_view);
     ImageButton timePlayerCancelButton = (ImageButton) findViewById(R.id.time_player_close);
     ImageButton timePlayerBackwardsButton = (ImageButton) findViewById(
-        R.id.time_player_play_backwards);
+            R.id.time_player_play_backwards);
     ImageButton timePlayerStopButton = (ImageButton) findViewById(R.id.time_player_play_stop);
     ImageButton timePlayerForwardsButton = (ImageButton) findViewById(
-        R.id.time_player_play_forwards);
+            R.id.time_player_play_forwards);
     final TextView timeTravelSpeedLabel = (TextView) findViewById(R.id.time_travel_speed_label);
 
     timePlayerCancelButton.setOnClickListener(new OnClickListener() {
@@ -818,13 +829,13 @@ public class DynamicStarMapActivity extends InjectableActivity
 
     Runnable displayUpdater = new Runnable() {
       private TextView timeTravelTimeReadout = (TextView) findViewById(
-          R.id.time_travel_time_readout);
+              R.id.time_travel_time_readout);
       private TextView timeTravelStatusLabel = (TextView) findViewById(
-          R.id.time_travel_status_label);
+              R.id.time_travel_status_label);
       private TextView timeTravelSpeedLabel = (TextView) findViewById(
-          R.id.time_travel_speed_label);
+              R.id.time_travel_speed_label);
       private final SimpleDateFormat dateFormatter = new SimpleDateFormat(
-          "yyyy.MM.dd G  HH:mm:ss z");
+              "yyyy.MM.dd G  HH:mm:ss z");
       private Date date = new Date();
       @Override
       public void run() {
